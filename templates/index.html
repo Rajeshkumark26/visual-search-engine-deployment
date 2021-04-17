@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+    <title>HI ! {{ result.name }}</title>
+    <style>
+        body {
+            width: 80%;
+            margin: auto;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2 class="text-center">{{ result.name }}</h2>
+
+    <div class="row g-3">
+        <div class="col-sm-10">
+            <select id="dynamic-select" class="form-select" aria-label="Default select example">
+                <option selected>Open this select menu</option>
+            </select>
+        </div>
+        <div class="col-sm-2">
+            <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" id="submit-button" type="button" onclick="showResult()">Submit</button>
+            </div>
+        </div>
+    </div>
+    
+    <br>  <!-- class="col-sm-3" -->
+    <div id='image-container' class="text-center"></div>
+    <hr>
+
+    <div id="card-rows" style="padding-top: 20px;" class="row row-cols-1 row-cols-md-4 g-4"></div>
+
+    <script>
+        // When the body of the HTML is loaded, this event function will be fired:
+        document.body.onload = function () {
+
+            // If Your Value is in Array:
+            // var values = ["dog", "cat", "parrot", "rabbit"];
+
+            // If Your Valus is in Objects:
+            var obj = {{ result.images | safe }};
+
+            
+            
+            
+//             var obj = {
+//                 0: { name: "dog", value: "dog" },
+//                 1: { name: "Cat", value: "Cat" },
+//                 2: { name: "Parrot", value: "Parrot" },
+//             }
+
+            // Getting the "Select" Component from the HTML DOM:
+            var select = document.getElementById("dynamic-select");
+
+            // FOR LOOP FOR OBJECT
+            for (let key in obj) {
+                var option = document.createElement("option");
+                option.value = obj[key];
+                option.text = obj[key];
+                select.appendChild(option);
+            }
+
+        }
+
+        // Function for creating a card when an image url (or) path is passed
+        create_a_card = (img, dist) => {
+            
+            var div = document.createElement('div');
+            div.className = 'col';
+            div.innerHTML = '<div class="card h-50">' 
+                + '<img src="' + img + '" class="card-img-top" alt="Sofa">'
+                + '<div class="card-body">'+"DISTANCE : "+dist+'</div>'
+                + '</div>';
+
+            document.getElementById('card-rows').appendChild(div);
+        }
+
+        showResult = () => {
+            var select = document.getElementById('dynamic-select');
+            var choice = select.value;
+
+            var image_container = document.getElementById('image-container')
+            image_container.innerHTML = '';
+
+            // Loading Image Each Selected Option:
+            var image = document.createElement('img');
+            image.src = choice ;
+            image.className = 'rounded';
+            image.alt = "Image";
+            image.style.height = '200px';
+            image.style.width = '200px';
+            document.getElementById('image-container').appendChild(image);
+            
+            fetch(`${window.origin}/`, {
+            method: "POST",
+            credentials: "include",
+            body: JSON.stringify(choice),
+            cache: "no-cache",
+            headers: new Headers({
+              "content-type": "application/json"
+            })
+            }).then(response => response.json())  
+              .then(json => {
+                            console.log(json)
+                            var distance=json.distance;
+                            var arr =json.images;
+                            console.log(distance,arr)
+                            var card_rows = document.getElementById('card-rows')
+                            card_rows.innerHTML = '';
+
+                            arr.forEach((img, index) => {
+                            var dist = distance[index];
+//                             console.log(img, dist);
+                            create_a_card(img, dist);
+                              });
+                         
+                        
+            })
+            
+          
+            
+            
+            // Put Image to be loaded
+//             if (choice == 'dog') {
+//                var arr = {{ result.images | safe }};
+//             } else if (choice == 'cat') {
+//                 var arr = ['5', '6', '7', '8', '10'];
+//             } else {
+//                 var arr = ['9', '10', '11', '12', '2'];
+//             }
+
+//             // Resetting the card rows to empty
+//             var card_rows = document.getElementById('card-rows')
+//             card_rows.innerHTML = '';
+
+//             // Passing the one image_url at a time to create card
+           
+        }
+
+    </script>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW"
+        crossorigin="anonymous">
+    </script>
+
+</body>
+
+</html>
+
+
+ 
