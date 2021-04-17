@@ -3,7 +3,7 @@
 
 
 ## Demo
-<img src="https://github.com/Rajeshkumark26/visual-search-engine-deployment/blob/main/vs-demo.gif" width="350" height="400">
+<img src="https://github.com/Rajeshkumark26/visual-search-engine-deployment/blob/main/vs-demo.gif" width="400" height="400">
 
 
 ## Contacts:
